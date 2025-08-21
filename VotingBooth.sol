@@ -14,13 +14,15 @@ contract VotingBooth{
         uint vote;
     }
 
-    address public leader;
+    address private leader;
     mapping (address => Voter) public voters;
     Proposal[] public proposals;
+    bool tie;
 
     constructor(bytes32[] memory proposalNames){
         leader = msg.sender;
         voters[leader].weight = 1;
+
 
         for (uint i = 0; i < proposalNames.length; i++){
             proposals.push(Proposal(proposalNames[i],0));
@@ -47,7 +49,7 @@ contract VotingBooth{
         }
         return string(bytesArray);
     }
-    
+
     function displayProposals() external view returns (string[] memory){
         string[] memory names = new string[](proposals.length);
         for (uint i = 0; i < proposals.length; i++){
@@ -71,7 +73,7 @@ contract VotingBooth{
         voters[msg.sender].voted = true;
     }
 
-    function getWinningProposal() public view returns (uint winningProposal_){
+    function getWinningProposal() private returns (uint winningProposal_){
         uint winningVoteCount = 0;
         for (uint i = 0; i < proposals.length; i++){
             if (proposals[i].voteCount > winningVoteCount){
@@ -79,11 +81,23 @@ contract VotingBooth{
                 winningProposal_ = i;
             }
         }
+        for (uint i = 0; i < proposals.length; i++){
+            if (proposals[i].voteCount == winningVoteCount && i != winningProposal_){
+                tie = true;
+            }
+        }
     }
 
-    function declareWinningProposal() external view returns (string memory winnerName_, uint voteCount_){
-        uint winningIndex = getWinningProposal();
-        winnerName_ = bytes32ToString(proposals[winningIndex].name);
-        voteCount_ = proposals[winningIndex].voteCount;
+
+    function declareWinningProposal() external returns(string memory) {
+        if (tie){
+            tie = false;
+            return ("There is a tie between proposals, please vote again");
+        } else {
+            uint winningIndex = getWinningProposal();
+            string memory winnerName = bytes32ToString(proposals[winningIndex].name);
+            return(winnerName);
+        }
+        
     }        
 }
