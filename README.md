@@ -4,11 +4,11 @@ Features
 - Initialize proposals by the contract deployer (leader)
 - Grant voting rights to addresses exclusively by the leader
 - Single vote per voter, enforced by contract logic
-- Retrieve proposal names and their corresponding vote counts
-- Determine and declare the winning proposal based on vote counts
+- View Functions: Retrieve proposal names (displayProposals) and vote counts (displayVoteCount).
+- Winning Proposal: Determine the winning proposal based on vote counts (declareWinningProposal).
+- Tie Handling: In the event of a tie, the contract resets vote counts and voter states, discarding previous round votes.
 
 Usage Notes
-- Proposal names must be passed as bytes32 values on contract deployment (use padding or helper tools).
-- Only the leader can assign voting rights, keeping control over who may vote.
-- Voters can only vote once.
-- Results can be queried by any external user at any time.
+- Proposal names must be passed as string values on contract deployment.
+- Only the leader can assign voting rights, and declare winners.
+- Voters can only vote once per round.
