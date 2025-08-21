@@ -89,6 +89,7 @@ contract VotingBooth{
     }
 
     function declareWinningProposal() external returns(string memory) {
+        require(msg.sender == leader, "Invalid user");
         if (tie){
             tieEvent();
             return ("There is a tie between proposals, please vote again");
